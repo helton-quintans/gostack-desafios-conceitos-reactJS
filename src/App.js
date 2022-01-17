@@ -4,19 +4,29 @@ import "./styles.css";
 
 function App() {
 
-  const [repository, setRepository] = useState([])
+  const [repositories, setRepositories] = useState([])
+
   useEffect(()=>{
     api.get('repositories').then(repository => {
-      {repository.data}
+      setRepositories(repository.data)
     })
   },[])
 
   async function handleAddRepository() {
-    // TODO
+    const response = await api.post('repositories', {
+      title: 'Repositoy-ADD',
+      url: 'https://github.com/helton-quintans/gostack-desafios-conceitos-reactJS',
+      techs: ['Node.js', 'ReactJS']
+    })
+
+    setRepositories([ ... repositories, response.data ])
   }
 
   async function handleRemoveRepository(id) {
-    // TODO
+    await api.delete(`repositories/${id}`);
+
+    setRepositories(repositories.filter(
+      repository => repository.id !== id))
   }
 
   return (
@@ -26,7 +36,7 @@ function App() {
           <li key={repository.id}>
           {repository.title}
 
-          <button onClick={() => handleRemoveRepository(1)}>
+          <button onClick={() => handleRemoveRepository(repository.id)}>
             Remover
           </button>
         </li>
